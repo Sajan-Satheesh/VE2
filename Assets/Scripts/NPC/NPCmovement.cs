@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class NPCmovement : NPCorientation
+public class NPCMovement : NPCorientation
 {
     [SerializeField] private float npcSpeed;
     [SerializeField] private float directionRayLength;
@@ -38,9 +38,11 @@ public class NPCmovement : NPCorientation
     }
     public void SetDirection()
     {
-        int toss = Random.Range(0, 2);
+        StandzoneTarget = null;
+        SeatTarget = null;
+        int randomDirection = Random.Range(0, 2);
         npcAnimator.SetBool("standZone",false);
-        if (toss == 0)
+        if (randomDirection == 0)
         {
             npcStartDirection = Direction.left;
         }
@@ -91,11 +93,11 @@ public class NPCmovement : NPCorientation
         npcAnimator.SetBool("walk", false);
         if (!resting)
         {
-            if (face.transform.localRotation.x > 0)
+            if (face.transform.position.y > 0)
             {
                 npcAnimator.SetInteger("Towards", 2);
             }
-            else if (face.transform.localRotation.x < 0)
+            else if (face.transform.position.y < 0)
             {
                 npcAnimator.SetInteger("Towards", 1);
             }
@@ -149,7 +151,7 @@ public class NPCmovement : NPCorientation
         Vector2 position = transform.position;
         if (position.x > MaxBound.x || position.x < MinBound.x || position.y > MaxBound.y || position.y < MinBound.y)
         {
-            NPCdirection(transform.position, gameObject.GetComponent<NPCmovement>());
+            NPCdirection(transform.position, gameObject.GetComponent<NPCMovement>());
             transform.position = InstantiateLocation(MinBound, MaxBound);
         }
     }

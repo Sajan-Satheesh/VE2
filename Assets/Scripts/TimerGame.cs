@@ -16,11 +16,11 @@ public class TimerGame : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        maxTime = GameManager.GameManagerInstance.MaxGameTime-1;
         gameTime = GetComponent<TMP_Text>();
     }
     private void Start()
     {
+        maxTime = GameManager.GameManagerInstance.MaxGameTime - 1;
         seconds = (int)Time.time;
         leftMinutes = maxTime;
         leftSeconds = 60;

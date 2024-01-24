@@ -14,7 +14,7 @@ public class DiningManager : MonoBehaviour
 
     void CheckSeatAvailability(Customer customer)
     {
-        NPCmovement PurchasedCustomer = customer.GetComponent<NPCmovement>();
+        NPCMovement PurchasedCustomer = customer.GetComponent<NPCMovement>();
         for(int i=0; i<Tables.Length; i++)
         {
             if (!Tables[i].tableOccupied)
@@ -44,7 +44,7 @@ public class DiningManager : MonoBehaviour
             }
             else
             {
-                customer.gameObject.GetComponent<NPCmovement>().SeatTarget = null;
+                customer.gameObject.GetComponent<NPCMovement>().SeatTarget = null;
             }
         }
     }

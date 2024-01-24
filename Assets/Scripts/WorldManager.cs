@@ -15,7 +15,7 @@ public class WorldManager : MonoBehaviour
     static public bool pause;
     static public Transform stallPosition;
     static public Bounds mapBoundary;
-    static public List<NPCmovement> CustomerNpc;
+    static public List<NPCMovement> CustomerNpc;
     static public Vector2 tablePosition;
     public MenuAllItem menuItemsList;
     public UiAllItems allItemsList;
@@ -32,7 +32,7 @@ public class WorldManager : MonoBehaviour
         tablePosition = TablePosition.position;
         stallPosition = StallPosition;
         pause = false;
-        CustomerNpc = new List<NPCmovement>();
+        CustomerNpc = new List<NPCMovement>();
         mapBoundary.size = MapObject.sizeDelta;
     }
     private void OnEnable()
@@ -41,7 +41,7 @@ public class WorldManager : MonoBehaviour
     }
     private void Start()
     {
-        zoneCount = spawnStandZones.WaitCount;
+        zoneCount = spawnStandZones.zoneNumbers;
         StartCoroutine(SetupCustomers());
     }
 
@@ -61,15 +61,15 @@ public class WorldManager : MonoBehaviour
 
     private void DrawCustomer(StandZone standZone)
     {
-        int index;
+        int customerDrawIndex;
         Debug.Log("Started Next Search");
         int availableNpcCount = NpcObjects.npcObjects.Count;
-        NPCmovement selectedNpc;
+        NPCMovement selectedNpc;
         while (standZone.AllotedObject == null)
         {
             Debug.Log("Started Checking");
-            index = Random.Range(0, availableNpcCount);
-            selectedNpc = NpcObjects.npcObjects[index].GetComponent<NPCmovement>();
+            customerDrawIndex = Random.Range(0, availableNpcCount);
+            selectedNpc = NpcObjects.npcObjects[customerDrawIndex].GetComponent<NPCMovement>();
             if (!selectedNpc.IsCustomer)
             {
                 standZone.AllotedObject = selectedNpc.gameObject;

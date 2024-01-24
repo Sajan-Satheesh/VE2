@@ -6,9 +6,9 @@ public class Customer : MonoBehaviour
 {
     [SerializeField] Image EatFilll;
     [SerializeField] int timeElapsedEating;
-    private NPCmovement npcCharacter;
+    private NPCMovement npcCharacter;
     public GameObject npcCanvasBar;
-    public int orderedId;
+    public int orderId;
     public float timeToConsume;
     public float fillAmount { set => EatFilll.fillAmount = value; }
     public Direction customerDirection { set => npcCharacter.npcStartDirection = value; }
@@ -17,7 +17,7 @@ public class Customer : MonoBehaviour
     private void Awake()
     {
         npcCanvasBar.SetActive(false);
-        npcCharacter = GetComponent<NPCmovement>();
+        npcCharacter = GetComponent<NPCMovement>();
     }
     private void OnEnable()
     {
@@ -28,9 +28,9 @@ public class Customer : MonoBehaviour
     {
         if(collision.gameObject.TryGetComponent(out StandZone targetZone))
         {
-            npcCharacter.resting = true;
             if (targetZone.AllotedObject != null && targetZone.AllotedObject.name == gameObject.name)
             {
+                npcCharacter.resting = true;
                 placeOrder();
             }
         }
@@ -54,7 +54,7 @@ public class Customer : MonoBehaviour
 
     void GetOrderId(int orderId, string item)
     {
-        orderedId = orderId;
+        this.orderId = orderId;
     }
 
     

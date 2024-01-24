@@ -33,7 +33,7 @@ public class NPCorientation : MonoBehaviour
         return position;
     }
 
-    protected void NPCdirection(Vector2 location, NPCmovement npc)
+    protected void NPCdirection(Vector2 location, NPCMovement npc)
     {
         if(location.x > MaxBound.x)
         {

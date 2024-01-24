@@ -95,7 +95,7 @@ public class Kitchen : MonoBehaviour
         slotAvailable = CheckSlotAvailability();
         for(int i = 0; i < Delivery.waitingCustomers.Count; i++)
         {
-            if (Delivery.waitingCustomers[i].orderedId == orderId)
+            if (Delivery.waitingCustomers[i].orderId == orderId)
             {
                 /*yield return new WaitForSeconds(1);*/
                 Customer customer = Delivery.waitingCustomers[i];

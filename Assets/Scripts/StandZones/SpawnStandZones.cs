@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class SpawnStandZones : MonoBehaviour
 {
-    [SerializeField] int zoneNumbers;
-    public int WaitCount { get => zoneNumbers;  }
+    [field : SerializeField] public int zoneNumbers { get; private set; }
     [SerializeField] GameObject Zone;
     public List<GameObject> Zones;
 
@@ -18,8 +17,9 @@ public class SpawnStandZones : MonoBehaviour
     {
         for (int i = 0; i < number; i++)
         {
-            Zones.Add(Instantiate(Zone,transform));
-            yield return new WaitForSeconds(0.1f);
+            Vector3 position = new(transform.position.x + Random.Range(-1f, 1f), transform.position.y - 3f, transform.position.z);
+            Zones.Add(Instantiate(Zone,position,Quaternion.identity,transform));
+            yield return new WaitForSeconds(1f);
         }
         StopAllCoroutines();
     }

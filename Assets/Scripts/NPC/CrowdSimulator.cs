@@ -14,7 +14,7 @@ public class CrowdSimulator : NPCorientation
 
     void Start()
     {
-        MapBoundary.size = WorldManager.mapBoundary.size;
+        MapBoundary = WorldManager.mapBoundary;
         minBound = MinBound;
         maxBound = MaxBound;
         StartCoroutine(SpawnNPC(NPC, NPCCount));
@@ -29,10 +29,10 @@ public class CrowdSimulator : NPCorientation
             
             Obj=npcObjects[i];
             Obj.transform.position = InstantiateLocation(minBound, maxBound);
-            NPCdirection(Obj.transform.position, Obj.GetComponent<NPCmovement>());
+            NPCdirection(Obj.transform.position, Obj.GetComponent<NPCMovement>());
             Obj.transform.position = InstantiateLocation(MinBound, MaxBound);
             Obj.name = "npc " + i.ToString();
-            WorldManager.CustomerNpc.Add(Obj.GetComponent<NPCmovement>());
+            WorldManager.CustomerNpc.Add(Obj.GetComponent<NPCMovement>());
             yield return new WaitForSeconds(2);
 
         }

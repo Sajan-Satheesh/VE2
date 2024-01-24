@@ -17,7 +17,7 @@ public class StandZone : MonoBehaviour
 
     private void Start()
     {
-        VendorPosition = WorldManager.stallPosition; 
+        VendorPosition = WorldManager.stallPosition ;
     }
 
     void Update()
@@ -29,14 +29,15 @@ public class StandZone : MonoBehaviour
     {
         if (Vector3.Distance(VendorPosition.position, transform.position) > 1)
         {
-            transform.LookAt(VendorPosition, transform.localPosition);
-            transform.Translate(Vector3.forward * Time.deltaTime,Space.Self);
+            transform.up = (VendorPosition.position - transform.position).normalized;
+            //transform.LookAt(VendorPosition, transform.localPosition);
+            transform.Translate(Vector3.up * Time.deltaTime);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.TryGetComponent(out NPCmovement npc))
+        if (collider.TryGetComponent(out NPCMovement npc))
         {
             if (AllotedObject != null && npc.name == AllotedObject.name)
             {
