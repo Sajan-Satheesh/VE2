@@ -244,7 +244,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2598077928573970308}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 077930561fa48f04fbbc0e095a9bd7b7, type: 3}
+  m_Script: {fileID: 11500000, guid: f3a9c97711590dd43a013e887711f267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   MapBoundary:
@@ -252,11 +252,10 @@ MonoBehaviour:
     m_Extent: {x: 0, y: 0, z: 0}
   npcSpeed: 1
   directionRayLength: 2
-  adjustmentSpeed: 1
+  adjustmentSpeed: 2
   face: {fileID: 2147849580743232209}
   resting: 0
-  IsCustomer: 0
-  npcStartDirection: 3
+  npcDirection: 0
   StandzoneTarget: {fileID: 0}
   SeatTarget: {fileID: 0}
 --- !u!114 &8658798466614718279
@@ -272,13 +271,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EatFilll: {fileID: 2702085487598131228}
-  npcCanvasBar: {fileID: 6442322788559009879}
-  orderedId: 0
-  timeToConsume: 0
   timeElapsedEating: 0
+  npcCanvasBar: {fileID: 6442322788559009879}
+  orderId: 0
+  IsCustomer: 0
+  timeToConsume: 0
 --- !u!95 &6856496490571117548
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -295,7 +295,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &5017686262162894420
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,7 +372,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.097, y: 5.628}
+  m_AnchoredPosition: {x: 0.097, y: 4.99}
   m_SizeDelta: {x: 101.602, y: 36.961}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &7031192696411551972

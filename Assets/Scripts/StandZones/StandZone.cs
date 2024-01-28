@@ -37,11 +37,11 @@ public class StandZone : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.TryGetComponent(out NPCMovement npc))
+        if (collider.TryGetComponent(out NPC npc))
         {
             if (AllotedObject != null && npc.name == AllotedObject.name)
             {
-                npc.SetDirection();
+                npc.SetRandomDirection();
                 AllotedObject = null;
                 StartCoroutine(DrawNewCustomer());
             }

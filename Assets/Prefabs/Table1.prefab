@@ -28,7 +28,7 @@ RectTransform:
   m_GameObject: {fileID: 264152511131201779}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.760116, y: 1.2460917, z: 1.2460917}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8991794797655869563}
@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.71, y: -1.22}
+  m_AnchoredPosition: {x: 2.49, y: -2.4499998}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &2778399135634354241
@@ -105,7 +105,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chairNumber: 4
   occupied: 0
-  chairAllotedCustomer: {fileID: 0}
 --- !u!61 &3364868918689458646
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -160,7 +159,7 @@ RectTransform:
   m_GameObject: {fileID: 3686139567064221046}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.760116, y: 1.2460917, z: 1.2460917}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8991794797655869563}
@@ -168,7 +167,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.1, y: 2.11}
+  m_AnchoredPosition: {x: 2.75, y: 4.539999}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &4637621422182159060
@@ -237,7 +236,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chairNumber: 2
   occupied: 0
-  chairAllotedCustomer: {fileID: 0}
 --- !u!61 &7645289830984573555
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -292,15 +290,15 @@ RectTransform:
   m_GameObject: {fileID: 4332079789818835753}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.760116, y: 1.2460917, z: 1.2460917}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8991794797655869563}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.73, y: 2.2600005}
+  m_AnchoredPosition: {x: -2.39, y: 4.49}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &5990234708858991180
@@ -369,7 +367,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chairNumber: 1
   occupied: 0
-  chairAllotedCustomer: {fileID: 0}
 --- !u!61 &333476647895014485
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -424,7 +421,7 @@ RectTransform:
   m_GameObject: {fileID: 4755473241204839504}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.760116, y: 1.2460917, z: 1.2460917}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8991794797655869563}
@@ -432,7 +429,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.07, y: -0.9999999}
+  m_AnchoredPosition: {x: -2.82, y: -2.19}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &5718821492085639479
@@ -501,7 +498,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chairNumber: 3
   occupied: 0
-  chairAllotedCustomer: {fileID: 0}
 --- !u!61 &4614399133397865462
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -556,8 +552,8 @@ RectTransform:
   m_GameObject: {fileID: 8991794797655869562}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.12, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.4166667}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1240883957846428721}
   - {fileID: 2354195571936697645}
@@ -612,8 +608,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 6559169653106e640974fac5e555e1d8, type: 3}
-  m_Color: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  m_Sprite: {fileID: 21300000, guid: ab03ed4c0120ea847a7b8cde74d3e6f3, type: 3}
+  m_Color: {r: 0.991556, g: 0.8632076, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -654,6 +650,6 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.000000071213584, y: -0.99563825}
-  m_Size: {x: 4.1194253, y: 1.8086758}
+  m_Offset: {x: 0.14599451, y: 0.6116078}
+  m_Size: {x: 10.250793, y: 5.9409914}
   m_Direction: 1

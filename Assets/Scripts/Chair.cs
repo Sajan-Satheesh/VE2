@@ -5,11 +5,11 @@ public class Chair : MonoBehaviour
 {
     [SerializeField] int chairNumber;
     public bool occupied;
-    public Customer chairAllotedCustomer;
+    public Customer chairAllotedCustomer { get; set; }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (chairAllotedCustomer!=null && chairAllotedCustomer.name == collision.name)
+        if (chairAllotedCustomer!=null && chairAllotedCustomer.gameObject.name == collision.gameObject.name)
         {
             Debug.Log("Seated");
             chairAllotedCustomer.restState = true;
@@ -18,7 +18,7 @@ public class Chair : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (chairAllotedCustomer != null && chairAllotedCustomer.name == collision.name)
+        if (chairAllotedCustomer != null && chairAllotedCustomer.gameObject.name == collision.gameObject.name)
         {
             chairAllotedCustomer = null;
             occupied = false;

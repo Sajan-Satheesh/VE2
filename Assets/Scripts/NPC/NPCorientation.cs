@@ -20,29 +20,31 @@ public class NPCorientation : MonoBehaviour
         MapBoundary.size = WorldManager.mapBoundary.size;
     }
 
-    protected Vector2 InstantiateLocation(Vector2 min, Vector2 max)
+    protected Vector2 SpawnRandomInBounds(Vector2 min, Vector2 max)
     {
         Vector2 position = new Vector2(0, 0);
         float yPos = Random.Range(min.y, max.y);
         int side = Random.Range(0,2);
-        switch (side)
+        position = (side) switch
         {
-            case 0: position = new Vector2(min.x, yPos);  break;
-            case 1: position = new Vector2(max.x, yPos);  break;
-        }
+            0 => new Vector2(min.x, yPos),
+            1 => new Vector2(max.x, yPos),
+            _ => new Vector2(max.x, yPos),
+        };
         return position;
     }
 
-    protected void NPCdirection(Vector2 location, NPCMovement npc)
+    protected Direction GetNpcDirection(Vector2 location)
     {
-        if(location.x > MaxBound.x)
+        if(location.x >= MaxBound.x)
         {
-            npc.npcStartDirection = Direction.right;
+            return Direction.right;
         }
-        if (location.x < MinBound.x)
+        if (location.x <= MinBound.x)
         {
-            npc.npcStartDirection = Direction.left;
+            return Direction.left;
         }
+        return default;
     }
 
 }

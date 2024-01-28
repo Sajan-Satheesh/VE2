@@ -6,18 +6,20 @@ public class Customer : MonoBehaviour
 {
     [SerializeField] Image EatFilll;
     [SerializeField] int timeElapsedEating;
-    private NPCMovement npcCharacter;
+    private NPC npcCharacter;
     public GameObject npcCanvasBar;
-    public int orderId;
+    public int orderId { get; set; }
+    public bool IsCustomer;
     public float timeToConsume;
     public float fillAmount { set => EatFilll.fillAmount = value; }
-    public Direction customerDirection { set => npcCharacter.npcStartDirection = value; }
+    public Direction customerDirection { set => npcCharacter.npcDirection = value; }
     public bool restState { set => npcCharacter.resting = value; }
 
     private void Awake()
     {
+        IsCustomer = false;
         npcCanvasBar.SetActive(false);
-        npcCharacter = GetComponent<NPCMovement>();
+        npcCharacter = GetComponent<NPC>();
     }
     private void OnEnable()
     {
@@ -36,6 +38,12 @@ public class Customer : MonoBehaviour
         }
     }
 
+    public void Leave()
+    {
+        npcCharacter.ResetCustomer();
+        npcCanvasBar.SetActive(false);
+        fillAmount = 0f;
+    }
     public void placeOrder()
     {
         customerDirection = Direction.up;
@@ -49,7 +57,7 @@ public class Customer : MonoBehaviour
             selectedItem = AvailableItems.menuItems[Random.Range(0, totalAvailableItems)];
             WorldManager.orderList.TakeOrder(selectedItem, 1, this);
         }
-        else OrderItem.CancelOrder(this);
+        else Leave();
     }
 
     void GetOrderId(int orderId, string item)
@@ -83,8 +91,7 @@ public class Customer : MonoBehaviour
             fillAmount = (float)timeElapsedEating / timeToConsume;
             yield return new WaitForSeconds(1);
         }
-        npcCharacter.SetDirection();
-        OrderItem.CancelOrder(this);
+        Leave();
         StopAllCoroutines();
     }
 

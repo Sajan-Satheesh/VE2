@@ -17,29 +17,35 @@ public class Kitchen : MonoBehaviour
     [SerializeField] private OrderList Delivery;
     [SerializeField] private Burner[] Slots= new Burner[2];
     public static Action<int> Payment;
-    public static Action<Customer> Dining;
-    public static  bool slotAvailable;
+    public static Action<Customer> Dining { get; set; }
+    public static  bool isSlotAvailable;
 
     private void Awake()
     {
-        slotAvailable = true;
+        isSlotAvailable = true;
     }
     void OnEnable()
     {
-        OrderItem.Availability += CheckSlotAvailability;
+        OrderItem.CheckStoves += CheckSlotAvailability;
         OrderItem.OrderProcessing += CheckAvailabilty;
     }
 
-    bool CheckSlotAvailability()
+    private bool CheckSlotAvailability()
+    {
+        return isSlotAvailable;
+    }
+
+    private void LoadSlotAvailability()
     {
         for(int i = 0; i < Slots.Length; i++)
         {
             if(!Slots[i].InUse)
             {
-                return true;
+                isSlotAvailable = true;
+                return;
             }
         }
-        return false;
+        isSlotAvailable = false;
     }
     private void CheckAvailabilty(int orderId, string itemName)
     {
@@ -55,7 +61,7 @@ public class Kitchen : MonoBehaviour
                 break;
             }
         }
-        slotAvailable = CheckSlotAvailability();
+        LoadSlotAvailability();
 
         for (int i = 0; i < foodList.AllItems.Length; i++)
         {
@@ -84,7 +90,7 @@ public class Kitchen : MonoBehaviour
         Slots[cookingSlot].InUse = false;
         Slots[cookingSlot].CookingStatusBar.fillAmount = 1;
         Slots[cookingSlot].CookingStatusText.text = "Not Cooking";
-        slotAvailable = true;
+        isSlotAvailable = true;
         /*StopAllCoroutines();*/
         StopCoroutine(Cook(cookingSlot, orderId,preparationTime,timetoEat,itemName));
         Deliver(orderId,timetoEat);
@@ -92,7 +98,7 @@ public class Kitchen : MonoBehaviour
 
     void Deliver(int orderId,int timeToEat)
     {
-        slotAvailable = CheckSlotAvailability();
+        LoadSlotAvailability();
         for(int i = 0; i < Delivery.waitingCustomers.Count; i++)
         {
             if (Delivery.waitingCustomers[i].orderId == orderId)
@@ -108,7 +114,7 @@ public class Kitchen : MonoBehaviour
     }
     private void OnDisable()
     {
-        OrderItem.Availability -= CheckSlotAvailability;
+        OrderItem.CheckStoves -= CheckSlotAvailability;
         OrderItem.OrderProcessing -= CheckAvailabilty;
     }
 }

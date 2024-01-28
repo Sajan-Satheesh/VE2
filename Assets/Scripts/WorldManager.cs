@@ -15,7 +15,7 @@ public class WorldManager : MonoBehaviour
     static public bool pause;
     static public Transform stallPosition;
     static public Bounds mapBoundary;
-    static public List<NPCMovement> CustomerNpc;
+    static public List<NPC> CustomerNpc;
     static public Vector2 tablePosition;
     public MenuAllItem menuItemsList;
     public UiAllItems allItemsList;
@@ -32,7 +32,7 @@ public class WorldManager : MonoBehaviour
         tablePosition = TablePosition.position;
         stallPosition = StallPosition;
         pause = false;
-        CustomerNpc = new List<NPCMovement>();
+        CustomerNpc = new List<NPC>();
         mapBoundary.size = MapObject.sizeDelta;
     }
     private void OnEnable()
@@ -64,17 +64,18 @@ public class WorldManager : MonoBehaviour
         int customerDrawIndex;
         Debug.Log("Started Next Search");
         int availableNpcCount = NpcObjects.npcObjects.Count;
-        NPCMovement selectedNpc;
+        Customer selectedNpc;
         while (standZone.AllotedObject == null)
         {
             Debug.Log("Started Checking");
             customerDrawIndex = Random.Range(0, availableNpcCount);
-            selectedNpc = NpcObjects.npcObjects[customerDrawIndex].GetComponent<NPCMovement>();
+            selectedNpc = NpcObjects.npcObjects[customerDrawIndex].GetComponent<Customer>();
             if (!selectedNpc.IsCustomer)
             {
                 standZone.AllotedObject = selectedNpc.gameObject;
                 selectedNpc.IsCustomer = true;
-                selectedNpc.StandzoneTarget = standZone.transform;
+                selectedNpc.GetComponent<NPC>().StandzoneTarget = standZone.transform;
+                selectedNpc.GetComponent<NPC>().SetState(NpcState.MOVE_TO_VENDOR);
             }
         }
     }
