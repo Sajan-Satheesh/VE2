@@ -7,6 +7,7 @@ public class StandZone : MonoBehaviour
 {
     [SerializeField] Transform VendorPosition;
     public GameObject AllotedObject;
+    public Coroutine drawCustomers = null;
     static public Action PlaceOrder;
     static public Action <StandZone>AddCustomer;
 
@@ -17,7 +18,7 @@ public class StandZone : MonoBehaviour
 
     private void Start()
     {
-        VendorPosition = WorldManager.stallPosition ;
+        VendorPosition = WorldManager.stallTransform ;
     }
 
     void Update()
@@ -30,32 +31,35 @@ public class StandZone : MonoBehaviour
         if (Vector3.Distance(VendorPosition.position, transform.position) > 1)
         {
             transform.up = (VendorPosition.position - transform.position).normalized;
-            //transform.LookAt(VendorPosition, transform.localPosition);
-            transform.Translate(Vector3.up * Time.deltaTime);
+            transform.Translate(transform.up * Time.deltaTime);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collider)
+    public void DrawNewCustomer()
     {
-        if (collider.TryGetComponent(out NPC npc))
+        if (drawCustomers != null)
         {
-            if (AllotedObject != null && npc.name == AllotedObject.name)
-            {
-                npc.SetRandomDirection();
-                AllotedObject = null;
-                StartCoroutine(DrawNewCustomer());
-            }
+            StopCoroutine(drawCustomers);
+            drawCustomers = null;
         }
+        drawCustomers = StartCoroutine(DrawNew());
     }
 
-    public IEnumerator DrawNewCustomer()
+
+    private IEnumerator DrawNew()
     {
-        int randomTime = UnityEngine.Random.Range(5, 25);
+        int randomTime = UnityEngine.Random.Range(5, 10);
         yield return new WaitForSeconds(randomTime);
         if (AllotedObject == null)
         {
-            AddCustomer(gameObject.GetComponent<StandZone>());
+            AddCustomer(this);
         }
+    }
+
+    public void ResetStandZone()
+    {
+        AllotedObject = null;
+        DrawNewCustomer();
     }
 
     private void OnDisable()

@@ -1,22 +1,26 @@
 
 using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class NPC : NPCorientation
 {
     [SerializeField] private float npcSpeed;
     [SerializeField] private float directionRayLength;
     [SerializeField] private float adjustmentSpeed;
-    [SerializeField] GameObject face;
+    [field: SerializeField] public GameObject face { get; private set; }
+
     private Vector2 tablePosition;
     private Animator npcAnimator;
-    private SpriteRenderer npcRenderer;
-    private Vector3 moveTowardsVector { get; set; }
+    private SpriteRenderer npcRenderer { get; set; }
     public bool resting;
     public NpcState currentState;
-    public Direction npcDirection;
-    public Transform StandzoneTarget;
-    public Transform SeatTarget;
+    public NpcAnimationsStates currentAnimationState;
+    private Collider2D npcCollider;
+    public Transform StandzoneTarget { private get; set; }
+    public Transform SeatTarget { private get; set; }
+    public Vector3 forwardDirection = Vector3.zero;
 
     private void Awake()
     {
@@ -25,6 +29,7 @@ public class NPC : NPCorientation
         SeatTarget = null;
         npcAnimator = GetComponent<Animator>();
         npcRenderer = GetComponent<SpriteRenderer>();
+        npcCollider = GetComponent<Collider2D>();
     }
 
     private void Start()
@@ -33,11 +38,12 @@ public class NPC : NPCorientation
         tablePosition = WorldManager.tablePosition;
     }
 
-    public void ResetCustomer()
+    public void ResetCharacter()
     {
-        StandzoneTarget = null;
-        SeatTarget = null;
-        GetComponent<Customer>().IsCustomer = false;
+        npcRenderer.sortingOrder = 3;
+        npcCollider.enabled = true;
+        ResetUsedStandZone();
+        ResetUsedSeat();
         resting = false;
         SetRandomDirection();
         SetState(NpcState.MOVING);
@@ -48,21 +54,32 @@ public class NPC : NPCorientation
         npcAnimator.SetBool("standZone",false);
         if (randomDirection == 0)
         {
-            npcDirection = Direction.left;
+            forwardDirection = Vector3.left;
         }
-        else npcDirection = Direction.right;
+        else forwardDirection = Vector3.right;
     }
     
     void RenderAboveTables()
     {
         if (transform.position.y < tablePosition.y)
         {
-            npcRenderer.sortingOrder = 5;
+            npcRenderer.sortingOrder = resting? 6 : 7;
         }
         else 
         {
-            npcRenderer.sortingOrder = 1;
+            npcRenderer.sortingOrder = resting ? 4 : 3;
         } 
+    }
+    public void SetForwardDirection(Vector3 direction)
+    {
+        forwardDirection = direction;
+        forwardDirection.z = 0f;
+    }
+    public void SetAnimationState(NpcAnimationsStates animationState)
+    {
+        if(currentAnimationState == animationState) return;
+        currentAnimationState = animationState;
+        npcAnimator.Play(currentAnimationState.ToString(),0);
     }
     public void SetState(NpcState state)
     {
@@ -73,88 +90,128 @@ public class NPC : NPCorientation
         switch (currentState)
         {
             case NpcState.EATING:
-                RestingState();
+                EatingState();
                 break;
             case NpcState.MOVING:
                 Movement();
                 break;
             case NpcState.MOVE_TO_VENDOR:
-                MoveToTarget(StandzoneTarget);
+                MoveToTarget(StandzoneTarget, NpcState.WAITING);
+                break;
+            case NpcState.WAITING:
+                WaitingState();
                 break;
             case NpcState.MOVE_TO_TABLE:
-                MoveToTarget(SeatTarget);
+                MoveToTarget(SeatTarget, NpcState.EATING);
                 break;
             default:
                 break;
         }
     }
 
-    private void RestingState()
-    {
-        npcAnimator.SetBool("walk", false);
-        npcAnimator.SetInteger("Towards", 0);
-        if (npcDirection == Direction.up)
-        {
-            npcAnimator.SetBool("standZone", true);
-        }
-        else if (npcDirection == Direction.down)
-        {
-            npcAnimator.SetBool("Seat12", true);
-        }
-    }
+
     void Update()
     {
         RenderAboveTables();
         UpdateAsPerState();
+        UpdateAnimations();
     }
 
-    private void MoveToTarget(Transform target)
+    bool yGreaterThanX() => Mathf.Abs(forwardDirection.y) > Mathf.Abs(forwardDirection.x);
+    private void EatingState()
     {
-        npcAnimator.SetBool("walk", false);
-        if (!resting)
+        if (resting) return;
+
+        npcCollider.enabled = false;
+        forwardDirection = (transform.position.y < tablePosition.y) ? Vector3.up : Vector3.down;
+        GetComponent<Customer>().StartToEat();
+        resting = true;
+    }
+    private void WaitingState()
+    {
+        if (resting) return;
+
+        SetForwardDirection((WorldManager.stallTransform.position - transform.position).normalized);
+        resting = true;
+    }
+    void UpdateAnimations()
+    {
+        if (yGreaterThanX() && forwardDirection.y < 0)
         {
-            if (face.transform.position.y > 0)
+            if (resting)
             {
-                npcAnimator.SetInteger("Towards", 2);
+                SetAnimationState(NpcAnimationsStates.NpcFaceDown);
+                return;
             }
-            else if (face.transform.position.y < 0)
-            {
-                npcAnimator.SetInteger("Towards", 1);
-            }
+            SetAnimationState(NpcAnimationsStates.NpcWalkDown);
+            return;
         }
-        face.transform.LookAt(target,Vector3.forward);
-        if (Vector3.Distance(transform.position, target.position) > 0.01)
+        else if (yGreaterThanX() && forwardDirection.y > 0)
         {
-            transform.Translate(face.transform.forward * Time.deltaTime * npcSpeed);
+            if (resting)
+            {
+                SetAnimationState(NpcAnimationsStates.NpcFaceUp);
+                return;
+            }
+            SetAnimationState(NpcAnimationsStates.NpcWalkUp);
+            return;
+        }
+        else if (!yGreaterThanX() && forwardDirection.x < 0)
+        {
+            SetAnimationState(NpcAnimationsStates.NpcWalkLeft);
+            return;
+        }
+        else if (!yGreaterThanX() && forwardDirection.x > 0)
+        {
+            SetAnimationState(NpcAnimationsStates.NpcWalkRight);
+            return;
+        }
+    }
+    private void MoveToTarget(Transform target, NpcState nextState)
+    {
+        if (currentState == NpcState.MOVE_TO_TABLE) ResetUsedStandZone();
+        if(resting) resting = false;
+
+        SetForwardDirection((target.position - transform.position).normalized);
+
+        if (Vector3.Distance(transform.position, target.position) > 0.05)
+        {
+            transform.Translate(forwardDirection * Time.deltaTime * npcSpeed);
+        }
+        else
+        {
+            if (currentState == NpcState.MOVE_TO_VENDOR) GetComponent<Customer>().placeOrder();
+            if (GetComponent<Customer>().IsCustomer) SetState(nextState);
         }
     }
 
     void Movement()
     {
-        npcAnimator.SetInteger("Towards", 0);
-        npcAnimator.SetBool("walk", true);
-        moveTowardsVector = new Vector3(0,0,0);
-        switch (npcDirection)
-        {
-            case Direction.right: 
-                moveTowardsVector = Vector3.left;
-                if (transform.localScale.x > 0)
-                {
-                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-                }
-                break;
+        ResetUsedSeat();
+        ResetUsedStandZone();
 
-            case Direction.left: 
-                moveTowardsVector = Vector3.right;
-                if (transform.localScale.x < 0)
-                {
-                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-                }
-                break;
-        }
-        transform.position += npcSpeed * Time.deltaTime * moveTowardsVector;
+        if (resting) resting = false;
+
+        transform.position += npcSpeed * Time.deltaTime * forwardDirection;
     }
-   
+
+    private void ResetUsedSeat()
+    {
+        if (SeatTarget != null)
+        {
+            SeatTarget.GetComponent<Chair>().ResetChair();
+            SeatTarget = null;
+        }
+    }
+    private void ResetUsedStandZone()
+    {
+        if (StandzoneTarget != null)
+        {
+            StandzoneTarget.GetComponent<StandZone>().ResetStandZone();
+            StandzoneTarget = null;
+        }
+    }
+
     private void FixedUpdate()
     {
         CheckBoundary();
@@ -169,18 +226,18 @@ public class NPC : NPCorientation
         Vector2 position = transform.position;
         if (position.x > MaxBound.x || position.x < MinBound.x || position.y > MaxBound.y || position.y < MinBound.y)
         {
-            transform.position = SpawnRandomInBounds(MinBound, MaxBound);
-            npcDirection = GetNpcDirection(transform.position);
+            transform.position = SpawnRandomInBounds();
+            SetForwardDirection(GetSpawnNpcDirection(transform.position));
         }
     }
 
     void SafeWalk()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, moveTowardsVector,directionRayLength, LayerMask.GetMask("NPC","Private"));
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, forwardDirection, directionRayLength, LayerMask.GetMask("NPC","Private"));
         
         if (hit.collider!=null)
         {
-            Debug.DrawRay(transform.position, moveTowardsVector * hit.distance, Color.red);
+            Debug.DrawRay(transform.position, forwardDirection * hit.distance, Color.red);
             float adjustThreshold = Random.Range(1, 5);
             float distanceBetween = hit.distance;
             if (adjustmentSpeed < 5 )
@@ -198,10 +255,11 @@ public class NPC : NPCorientation
         
         else
         {
-            Debug.DrawRay(transform.position, moveTowardsVector * directionRayLength, Color.white);
+            Debug.DrawRay(transform.position, forwardDirection * directionRayLength, Color.white);
         }
 
     }
 
 }
-public enum NpcState { EATING, MOVING, MOVE_TO_VENDOR, MOVE_TO_TABLE}
+public enum NpcState { EATING, MOVING, MOVE_TO_VENDOR, MOVE_TO_TABLE, WAITING}
+public enum NpcAnimationsStates { NpcWalkLeft, NpcWalkRight, NpcWalkUp, NpcWalkDown, NpcFaceUp, NpcFaceDown }

@@ -16,7 +16,7 @@ public class OrderItem : MonoBehaviour
 
     //static public Action<Customer> CancelOrder { get; set; }
     static public Func<bool> CheckStoves;
-    static public Action <int,string>OrderProcessing;
+    static public Action<int, string> OrderProcessing { get; set; }
     private bool accepted;
 
     private void Awake()

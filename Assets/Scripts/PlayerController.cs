@@ -4,20 +4,17 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] KeyCode upward, downward, leftward, rightward;
     [SerializeField] float speed;
-    [SerializeField] float shootSpeed;
     private Vector3 movement;
-    [SerializeField] Transform marker;
     [SerializeField] GameObject bullet;
     [SerializeField] GameObject copybullet;
     [SerializeField] Camera cam;
     [SerializeField] GameObject GameOverScreen;
-    [SerializeField] bool fire;
-    private Vector3 shootAim;
-    private Vector3 shootDirection;
+    private Vector3 pointerPoistion;
     [SerializeField] RectTransform ShopArea;
     private Bounds ShootingBound;
     private Animator PlayerMovementAnimation;
     private Bounds playerMaxBoundary;
+    [SerializeField] private Sprite defaultCursor;
 
     private void Awake()
     {
@@ -27,53 +24,24 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         playerMaxBoundary = WorldManager.mapBoundary;
-        fire = false;
         copybullet = null;
         ShootingBound =new Bounds(Vector3.zero, ShopArea.sizeDelta) ;
     }
-    void shoot()
+
+    private void CursorUpdate()
     {
-        shootAim = cam.ScreenToWorldPoint(Input.mousePosition);
-        shootAim = new Vector3(shootAim.x, shootAim.y, 0);
-
-        if (!fire)
+        pointerPoistion = cam.ScreenToWorldPoint(Input.mousePosition);
+        pointerPoistion.z = 0;
+        if (!ShootingBound.Contains(pointerPoistion))
         {
-            shootDirection = (shootAim - transform.position).normalized;
-        }
-
-        if (Input.GetMouseButtonDown(0)&&ShootingBound.Contains(shootAim))
-        {
-            if (copybullet==null)
-            {
-                copybullet = Instantiate(bullet, transform.position, Quaternion.FromToRotation(Vector3.up, shootDirection));
-                fire = true;
-            }
-        }
-        if (!ShootingBound.Contains(shootAim))
-        {
-            Cursor.visible = true;
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
         else
         {
-            Cursor.visible = false;
-            marker.position = shootAim;
+            Cursor.SetCursor(defaultCursor.texture, Vector2.zero, CursorMode.Auto);
         }
-        if (fire)
-        {
-            copybullet.transform.position += shootDirection * Time.deltaTime*shootSpeed;
-        }
-        
     }
 
-    void bulletRestore()
-    {
-        if (copybullet!=null && !ShootingBound.Contains(copybullet.transform.position))
-        {
-            Destroy(copybullet);
-            fire = false;
-        }
-    }
     void Walk()
     {
         movement = new Vector3(0,0,0);
@@ -121,8 +89,7 @@ public class PlayerController : MonoBehaviour
         AbandonShop();
         if (!WorldManager.pause)
         {
-            shoot();
-            bulletRestore();
+            CursorUpdate();
             Walk();
         }
     }

@@ -21,6 +21,8 @@ public class GameOver : MonoBehaviour
     }
     private void OnEnable()
     {
+        WorldManager.pause = true;
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         Time.timeScale = 0;
         DisplayScore.text = scoring.totalCash.ToString();
         if (scoring.totalCash > GameManager.GameManagerInstance.HighScore)

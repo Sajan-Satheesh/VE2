@@ -1,13 +1,6 @@
 
 using UnityEngine;
 
-public enum Direction
-{
-    up,
-    down,
-    left,
-    right
-}
 public class NPCorientation : MonoBehaviour
 {
     [SerializeField] protected Bounds MapBoundary;
@@ -17,32 +10,32 @@ public class NPCorientation : MonoBehaviour
 
     private void Start()
     {
-        MapBoundary.size = WorldManager.mapBoundary.size;
+        MapBoundary = WorldManager.mapBoundary;
     }
 
-    protected Vector2 SpawnRandomInBounds(Vector2 min, Vector2 max)
+    protected Vector2 SpawnRandomInBounds()
     {
         Vector2 position = new Vector2(0, 0);
-        float yPos = Random.Range(min.y, max.y);
+        float yPos = Random.Range(MinBound.y, MaxBound.y);
         int side = Random.Range(0,2);
         position = (side) switch
         {
-            0 => new Vector2(min.x, yPos),
-            1 => new Vector2(max.x, yPos),
-            _ => new Vector2(max.x, yPos),
+            0 => new Vector2(MinBound.x, yPos),
+            1 => new Vector2(MaxBound.x, yPos),
+            _ => new Vector2(MaxBound.x, yPos),
         };
         return position;
     }
 
-    protected Direction GetNpcDirection(Vector2 location)
+    protected Vector3 GetSpawnNpcDirection(Vector2 location)
     {
         if(location.x >= MaxBound.x)
         {
-            return Direction.right;
+            return Vector3.left;
         }
         if (location.x <= MinBound.x)
         {
-            return Direction.left;
+            return Vector3.right;
         }
         return default;
     }

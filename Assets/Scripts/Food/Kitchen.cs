@@ -10,6 +10,7 @@ public class Burner
     public bool InUse;
     public Image CookingStatusBar;
     public TMP_Text CookingStatusText;
+    public Coroutine cookingCoroutine;
 }
 public class Kitchen : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class Kitchen : MonoBehaviour
     void OnEnable()
     {
         OrderItem.CheckStoves += CheckSlotAvailability;
-        OrderItem.OrderProcessing += CheckAvailabilty;
+        OrderItem.OrderProcessing += StartCooking;
     }
 
     private bool CheckSlotAvailability()
@@ -47,7 +48,7 @@ public class Kitchen : MonoBehaviour
         }
         isSlotAvailable = false;
     }
-    private void CheckAvailabilty(int orderId, string itemName)
+    private void StartCooking(int orderId, string itemName)
     {
         int cookingSlot = 0;
         int preparationTime=0;
@@ -73,8 +74,7 @@ public class Kitchen : MonoBehaviour
                 break;
             }
         }
-        
-        StartCoroutine(Cook(cookingSlot, orderId, preparationTime, timeToEat, itemName));
+        Slots[cookingSlot].cookingCoroutine = StartCoroutine(Cook(cookingSlot, orderId, preparationTime, timeToEat, itemName));
     }
 
     IEnumerator Cook(int cookingSlot,int orderId,int preparationTime,int timetoEat,string itemName)
@@ -92,8 +92,9 @@ public class Kitchen : MonoBehaviour
         Slots[cookingSlot].CookingStatusText.text = "Not Cooking";
         isSlotAvailable = true;
         /*StopAllCoroutines();*/
-        StopCoroutine(Cook(cookingSlot, orderId,preparationTime,timetoEat,itemName));
-        Deliver(orderId,timetoEat);
+        Deliver(orderId, timetoEat);
+        StopCoroutine(Slots[cookingSlot].cookingCoroutine);
+        Slots[cookingSlot].cookingCoroutine = null;
     }
 
     void Deliver(int orderId,int timeToEat)
@@ -115,6 +116,6 @@ public class Kitchen : MonoBehaviour
     private void OnDisable()
     {
         OrderItem.CheckStoves -= CheckSlotAvailability;
-        OrderItem.OrderProcessing -= CheckAvailabilty;
+        OrderItem.OrderProcessing -= StartCooking;
     }
 }

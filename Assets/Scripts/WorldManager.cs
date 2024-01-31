@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 public class WorldManager : MonoBehaviour
 {
-    [SerializeField] Transform StallPosition;
+    [field :SerializeField] public Transform StallPosition { get; private set; }
     [SerializeField] Transform TablePosition;
     [SerializeField] SpawnStandZones spawnStandZones;
     [SerializeField] CrowdSimulator NpcObjects;
@@ -13,7 +13,7 @@ public class WorldManager : MonoBehaviour
     [SerializeField] GameObject PauseScreen;
     private int zoneCount;
     static public bool pause;
-    static public Transform stallPosition;
+    static public Transform stallTransform;
     static public Bounds mapBoundary;
     static public List<NPC> CustomerNpc;
     static public Vector2 tablePosition;
@@ -30,10 +30,10 @@ public class WorldManager : MonoBehaviour
         AllItemsList = allItemsList;
         orderList = OrderList;
         tablePosition = TablePosition.position;
-        stallPosition = StallPosition;
+        stallTransform = StallPosition;
         pause = false;
         CustomerNpc = new List<NPC>();
-        mapBoundary.size = MapObject.sizeDelta;
+        mapBoundary.size = MapObject.sizeDelta*2;
     }
     private void OnEnable()
     {
@@ -51,33 +51,32 @@ public class WorldManager : MonoBehaviour
         int nextCustomerArrival;
         for (int i = 0; i < zoneCount; i++)
         {
-            nextCustomerArrival = Random.Range(5, 25);
+            nextCustomerArrival = Random.Range(2,5);
             yield return new WaitForSeconds(nextCustomerArrival);
             StandZone standZone = spawnStandZones.Zones[i].GetComponent<StandZone>();
-            DrawCustomer(standZone);
+            DrawCustomer( standZone);
         }
         StopAllCoroutines();
     }
 
-    private void DrawCustomer(StandZone standZone)
+    private void DrawCustomer( StandZone standZone)
     {
         int customerDrawIndex;
-        Debug.Log("Started Next Search");
+        //Debug.Log("Started Next Search");
         int availableNpcCount = NpcObjects.npcObjects.Count;
         Customer selectedNpc;
-        while (standZone.AllotedObject == null)
+        //Debug.Log("Started Checking");
+        do
         {
-            Debug.Log("Started Checking");
             customerDrawIndex = Random.Range(0, availableNpcCount);
             selectedNpc = NpcObjects.npcObjects[customerDrawIndex].GetComponent<Customer>();
-            if (!selectedNpc.IsCustomer)
-            {
-                standZone.AllotedObject = selectedNpc.gameObject;
-                selectedNpc.IsCustomer = true;
-                selectedNpc.GetComponent<NPC>().StandzoneTarget = standZone.transform;
-                selectedNpc.GetComponent<NPC>().SetState(NpcState.MOVE_TO_VENDOR);
-            }
         }
+        while (selectedNpc.IsCustomer);
+            
+        standZone.AllotedObject = selectedNpc.gameObject;
+        selectedNpc.SetAsCustomer();
+        selectedNpc.GetComponent<NPC>().StandzoneTarget = standZone.transform;
+        selectedNpc.GetComponent<NPC>().SetState(NpcState.MOVE_TO_VENDOR);
     }
 
     private void Update()
