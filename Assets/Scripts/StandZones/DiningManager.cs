@@ -14,38 +14,34 @@ public class DiningManager : MonoBehaviour
 
     void CheckSeatAvailability(Customer customer)
     {
-        NPCMovement PurchasedCustomer = customer.GetComponent<NPCMovement>();
-        for(int i=0; i<Tables.Length; i++)
+        NPC PurchasedCustomer = customer.GetComponent<NPC>();
+        bool isTableReserved = false;
+        for (int i=0; i<Tables.Length; i++)
         {
             if (!Tables[i].tableOccupied)
             {
-                bool once = false;
                 for(int j=0; j < Tables[i].chairs.Length; j++)
                 {
                     if (!Tables[i].chairs[j].occupied)
                     {
-                        if (once)
-                        {
-                            break;
-                        }
                         PurchasedCustomer.SeatTarget = Tables[i].chairs[j].transform;
-                        PurchasedCustomer.StandzoneTarget = null;
-                        Tables[i].chairs[j].occupied = true;
                         Tables[i].chairs[j].chairAllotedCustomer = customer;
-                        once = true;
+                        Tables[i].chairs[j].occupied = true;
+                        isTableReserved = true;
+                        PurchasedCustomer.SetState(NpcState.MOVE_TO_TABLE);
+                        break;
                     }
                 }
-                if (once)
+                if (isTableReserved)
                 {
                     break;
                 }
                 Tables[i].tableOccupied = true;
-                break;
             }
-            else
-            {
-                customer.gameObject.GetComponent<NPCMovement>().SeatTarget = null;
-            }
+        }
+        if (!isTableReserved)
+        {
+            customer.Leave();
         }
     }
 

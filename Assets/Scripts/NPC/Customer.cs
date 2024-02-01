@@ -6,39 +6,45 @@ public class Customer : MonoBehaviour
 {
     [SerializeField] Image EatFilll;
     [SerializeField] int timeElapsedEating;
-    private NPCMovement npcCharacter;
+    public NPC npcCharacter { get; private set; }
     public GameObject npcCanvasBar;
-    public int orderId;
+    public int orderId { get; set; }
+    public bool IsCustomer { get;  private set; }
     public float timeToConsume;
     public float fillAmount { set => EatFilll.fillAmount = value; }
-    public Direction customerDirection { set => npcCharacter.npcStartDirection = value; }
-    public bool restState { set => npcCharacter.resting = value; }
 
     private void Awake()
     {
+        IsCustomer = false;
         npcCanvasBar.SetActive(false);
-        npcCharacter = GetComponent<NPCMovement>();
+        npcCharacter = GetComponent<NPC>();
     }
     private void OnEnable()
     {
         OrderItem.OrderProcessing += GetOrderId;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void SetAsCustomer()
     {
-        if(collision.gameObject.TryGetComponent(out StandZone targetZone))
-        {
-            if (targetZone.AllotedObject != null && targetZone.AllotedObject.name == gameObject.name)
-            {
-                npcCharacter.resting = true;
-                placeOrder();
-            }
-        }
+        IsCustomer = true;
+    }
+
+    public void Leave()
+    {
+        ResetCustomer();
+        npcCharacter.ResetCharacter();
+    }
+
+    private void ResetCustomer()
+    {
+        IsCustomer = false;
+        npcCanvasBar.SetActive(false);
+        fillAmount = 0f;
     }
 
     public void placeOrder()
     {
-        customerDirection = Direction.up;
+        npcCharacter.SetForwardDirection(Vector3.up);
         MenuAllItem AvailableItems = WorldManager.MenuItemsList.GetComponent<MenuAllItem>();
         int totalAvailableItems=0;
         MenuItem selectedItem;
@@ -49,7 +55,7 @@ public class Customer : MonoBehaviour
             selectedItem = AvailableItems.menuItems[Random.Range(0, totalAvailableItems)];
             WorldManager.orderList.TakeOrder(selectedItem, 1, this);
         }
-        else OrderItem.CancelOrder(this);
+        else Leave();
     }
 
     void GetOrderId(int orderId, string item)
@@ -59,22 +65,14 @@ public class Customer : MonoBehaviour
 
     
     
-    public void StartToEat(int num)
+    public void StartToEat()
     {
-        StartCoroutine(Eat(num));
+        StartCoroutine(Eat());
     }
 
-    public void DiningFacingDirection(int chairNumber)
+
+    private IEnumerator Eat()
     {
-        if (chairNumber == 1 || chairNumber == 2)
-        {
-            customerDirection = Direction.down;
-        }
-        else customerDirection = Direction.up;
-    }
-    private IEnumerator Eat(int chairNumber)
-    {
-        DiningFacingDirection(chairNumber);
         timeElapsedEating = 0;
         EatFilll.fillAmount = 0;
         while (timeToConsume > timeElapsedEating)
@@ -83,8 +81,7 @@ public class Customer : MonoBehaviour
             fillAmount = (float)timeElapsedEating / timeToConsume;
             yield return new WaitForSeconds(1);
         }
-        npcCharacter.SetDirection();
-        OrderItem.CancelOrder(this);
+        Leave();
         StopAllCoroutines();
     }
 

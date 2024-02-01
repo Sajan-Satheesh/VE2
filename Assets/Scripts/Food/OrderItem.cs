@@ -14,11 +14,10 @@ public class OrderItem : MonoBehaviour
     public Customer customer;
     public int orderId;
 
-    static public Action<Customer> CancelOrder;
-    static public Func<bool> Availability;
-    static public Action <int,string>OrderProcessing;
+    //static public Action<Customer> CancelOrder { get; set; }
+    static public Func<bool> CheckStoves;
+    static public Action<int, string> OrderProcessing { get; set; }
     private bool accepted;
-    private bool slotsAvailable;
 
     private void Awake()
     {
@@ -37,19 +36,17 @@ public class OrderItem : MonoBehaviour
         gameObject.GetComponentInParent<OrderList>().orderedItems.Remove(this);
         if (!accepted)
         {
-            CancelOrder(customer);
+            customer.Leave();
         }
     }
 
     private void SendtoKitchen()
     {
-        slotsAvailable = Availability();
-        Debug.Log(slotsAvailable);
-        if (slotsAvailable)
+        if ((bool)CheckStoves?.Invoke())
         {
             accepted = true;
             gameObject.GetComponentInParent<OrderList>().waitingCustomers.Add(customer);
-            OrderProcessing(orderId, itemName.text);
+            OrderProcessing(++orderId, itemName.text);
             RemoveItem();
         }
     }

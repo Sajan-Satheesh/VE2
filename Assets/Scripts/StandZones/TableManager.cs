@@ -6,7 +6,7 @@ public class TableManager : MonoBehaviour
 {
 
     public bool tableOccupied;
-    public Chair[] chairs = new Chair[4];
+    public Chair[] chairs;
     void Awake()
     {
         tableOccupied = false;

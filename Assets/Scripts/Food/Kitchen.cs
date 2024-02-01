@@ -10,6 +10,7 @@ public class Burner
     public bool InUse;
     public Image CookingStatusBar;
     public TMP_Text CookingStatusText;
+    public Coroutine cookingCoroutine;
 }
 public class Kitchen : MonoBehaviour
 {
@@ -17,31 +18,37 @@ public class Kitchen : MonoBehaviour
     [SerializeField] private OrderList Delivery;
     [SerializeField] private Burner[] Slots= new Burner[2];
     public static Action<int> Payment;
-    public static Action<Customer> Dining;
-    public static  bool slotAvailable;
+    public static Action<Customer> Dining { get; set; }
+    public static  bool isSlotAvailable;
 
     private void Awake()
     {
-        slotAvailable = true;
+        isSlotAvailable = true;
     }
     void OnEnable()
     {
-        OrderItem.Availability += CheckSlotAvailability;
-        OrderItem.OrderProcessing += CheckAvailabilty;
+        OrderItem.CheckStoves += CheckSlotAvailability;
+        OrderItem.OrderProcessing += StartCooking;
     }
 
-    bool CheckSlotAvailability()
+    private bool CheckSlotAvailability()
+    {
+        return isSlotAvailable;
+    }
+
+    private void LoadSlotAvailability()
     {
         for(int i = 0; i < Slots.Length; i++)
         {
             if(!Slots[i].InUse)
             {
-                return true;
+                isSlotAvailable = true;
+                return;
             }
         }
-        return false;
+        isSlotAvailable = false;
     }
-    private void CheckAvailabilty(int orderId, string itemName)
+    private void StartCooking(int orderId, string itemName)
     {
         int cookingSlot = 0;
         int preparationTime=0;
@@ -55,7 +62,7 @@ public class Kitchen : MonoBehaviour
                 break;
             }
         }
-        slotAvailable = CheckSlotAvailability();
+        LoadSlotAvailability();
 
         for (int i = 0; i < foodList.AllItems.Length; i++)
         {
@@ -67,8 +74,7 @@ public class Kitchen : MonoBehaviour
                 break;
             }
         }
-        
-        StartCoroutine(Cook(cookingSlot, orderId, preparationTime, timeToEat, itemName));
+        Slots[cookingSlot].cookingCoroutine = StartCoroutine(Cook(cookingSlot, orderId, preparationTime, timeToEat, itemName));
     }
 
     IEnumerator Cook(int cookingSlot,int orderId,int preparationTime,int timetoEat,string itemName)
@@ -84,15 +90,16 @@ public class Kitchen : MonoBehaviour
         Slots[cookingSlot].InUse = false;
         Slots[cookingSlot].CookingStatusBar.fillAmount = 1;
         Slots[cookingSlot].CookingStatusText.text = "Not Cooking";
-        slotAvailable = true;
+        isSlotAvailable = true;
         /*StopAllCoroutines();*/
-        StopCoroutine(Cook(cookingSlot, orderId,preparationTime,timetoEat,itemName));
-        Deliver(orderId,timetoEat);
+        Deliver(orderId, timetoEat);
+        StopCoroutine(Slots[cookingSlot].cookingCoroutine);
+        Slots[cookingSlot].cookingCoroutine = null;
     }
 
     void Deliver(int orderId,int timeToEat)
     {
-        slotAvailable = CheckSlotAvailability();
+        LoadSlotAvailability();
         for(int i = 0; i < Delivery.waitingCustomers.Count; i++)
         {
             if (Delivery.waitingCustomers[i].orderId == orderId)
@@ -108,7 +115,7 @@ public class Kitchen : MonoBehaviour
     }
     private void OnDisable()
     {
-        OrderItem.Availability -= CheckSlotAvailability;
-        OrderItem.OrderProcessing -= CheckAvailabilty;
+        OrderItem.CheckStoves -= CheckSlotAvailability;
+        OrderItem.OrderProcessing -= StartCooking;
     }
 }
