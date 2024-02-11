@@ -957,7 +957,7 @@ MonoBehaviour:
 
     4. Orders
     window in which the customer''s order will be displayed, click on the green button
-    to cook and press cross to rejet.
+    to cook and press cross to reject.
 
 
     5. The current cooking status is displayed
@@ -2895,7 +2895,7 @@ MonoBehaviour:
   m_text: 'Rules:
 
 
-    The player should not exit the zone, otherwise it will wnd
+    The player should not exit the zone, otherwise it will end
     the game.
 
 
