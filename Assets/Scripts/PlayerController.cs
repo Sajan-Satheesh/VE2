@@ -6,7 +6,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float speed;
     private Vector3 movement;
     [SerializeField] GameObject bullet;
-    [SerializeField] GameObject copybullet;
     [SerializeField] Camera cam;
     [SerializeField] GameObject GameOverScreen;
     private Vector3 pointerPoistion;
@@ -24,7 +23,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         playerMaxBoundary = WorldManager.mapBoundary;
-        copybullet = null;
         ShootingBound =new Bounds(Vector3.zero, ShopArea.sizeDelta) ;
     }
 
